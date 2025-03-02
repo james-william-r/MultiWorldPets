@@ -18,9 +18,9 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     
-    # Simply upload the JAR as a workflow artifact
+    # Updated to use the latest version of upload-artifact
     - name: Upload JAR
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: MultiWorldPets
         path: target/*.jar
