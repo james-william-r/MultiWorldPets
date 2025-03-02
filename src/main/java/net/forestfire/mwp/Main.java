@@ -40,7 +40,6 @@ public void onDisable() { HandlerList.unregisterAll(); }
 //------------------- Plugin Event Handlers -------------------
 
 @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 public void onPlayerChangedWorld(PlayerChangedWorldEvent event) { 
     if (event.getPlayer().hasPermission(PERM_USE)) {
         Player p = event.getPlayer(); 
