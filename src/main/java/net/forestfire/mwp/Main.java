@@ -1,4 +1,5 @@
 //MWP ©2020 Pecacheu. Licensed under GNU GPL 3.0
+//Modified to only teleport dogs and cats
 
 package net.forestfire.mwp;
 
@@ -79,6 +80,12 @@ public void onPlayerChangedWorld(PlayerChangedWorldEvent event) { if(event.getPl
 }}
 
 void tpPet(LivingEntity pet, Player p) {
+	// Only teleport if pet is a dog (Wolf) or a Cat
+	if (!isDogOrCat(pet)) {
+		if (DBG) msg(null,MSG+"&cSkipped teleporting "+pet.getName()+" as it's not a dog or cat");
+		return;
+	}
+	
 	String w=pet.getWorld().getName(), nw=p.getWorld().getName(),
 	n=pet.getName(); Location nl=randomLoc(pet, p.getLocation());
 	if(nl != null) { //Teleport
@@ -94,10 +101,18 @@ void tpPet(LivingEntity pet, Player p) {
 
 //------------------- Utility Functions -------------------
 
+// Check if entity is a dog (Wolf) or cat
+static boolean isDogOrCat(LivingEntity entity) {
+	return entity instanceof Wolf || entity instanceof Cat;
+}
+
 static ArrayList<LivingEntity> getPetsOf(UUID owner, World w) {
 	ArrayList<LivingEntity> pets=new ArrayList<>();
-	for(LivingEntity e: w.getEntitiesByClass(LivingEntity.class)) if(e instanceof Tameable
-		&& owner.equals(((Tameable)e).getOwnerUniqueId())) pets.add(e);
+	for(LivingEntity e: w.getEntitiesByClass(LivingEntity.class)) {
+		if(e instanceof Tameable && owner.equals(((Tameable)e).getOwnerUniqueId()) && isDogOrCat(e)) {
+			pets.add(e);
+		}
+	}
 	return pets;
 }
 
