@@ -21,7 +21,7 @@ import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
 public class Main extends JavaPlugin implements Listener {
-static final String MSG="&e[PreciousCargo] &r", PERM_USE="multiworldpets.use";
+static final String MSG="&f[PreciousCargo] &6", PERM_USE="multiworldpets.use";
 static int RADIUS, MAX_LOC_TRIES; static ArrayList<Material> UNSAFE;
 static boolean DBG;
 
@@ -49,18 +49,18 @@ public void onPlayerChangedWorld(PlayerChangedWorldEvent event) { if(event.getPl
 void tpPet(LivingEntity pet, Player p) {
 	// Only teleport if pet is a dog (Wolf) or a Cat
 	if (isDogOrCat(pet)) {
-		
-	String w=pet.getWorld().getName(), nw=p.getWorld().getName(),
-	n=pet.getName(); Location nl=randomLoc(pet, p.getLocation());
-	if(nl != null) { //Teleport
-		killOthers(pet); pet.teleport(nl); sitting(pet,false);
-		msg(p,MSG+"&a"+n+"&b joined you in "+w+"!");
-		msg(null,MSG+"&bTeleported "+p.getName()
-			+"'s &bpet &a"+n+" &bfrom &d"+w+" &bto &d"+nw);
-	} else { //Unsafe
-		String e=MSG+"&cFailed to Teleport &a"+n+" &cfrom &d"+w+" &cto &d"+nw+"&c!";
-		msg(p,e); msg(null,e);
-	}
+		String w=pet.getWorld().getName(), nw=p.getWorld().getName(),
+		n=pet.getName(); Location nl=randomLoc(pet, p.getLocation());
+		if(nl != null) {
+			//Teleport
+			killOthers(pet); pet.teleport(nl); sitting(pet,false);
+			msg(p,MSG+"&2"+n+"&6 joined you from "+w+"!");
+			msg(null,MSG+"&bTeleported "+p.getName()
+				+"'s &bpet &a"+n+" &bfrom &d"+w+" &bto &d"+nw);
+		} else { //Unsafe
+			String e=MSG+"&cFailed to Teleport &a"+n+" &cfrom &d"+w+" &cto &d"+nw+"&c!";
+			msg(p,e); msg(null,e);
+		}
 	}
 }
 
