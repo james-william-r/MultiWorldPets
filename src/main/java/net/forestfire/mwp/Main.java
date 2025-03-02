@@ -40,23 +40,84 @@ public void onDisable() { HandlerList.unregisterAll(); }
 //------------------- Plugin Event Handlers -------------------
 
 @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 public void onPlayerChangedWorld(PlayerChangedWorldEvent event) { 
     if (event.getPlayer().hasPermission(PERM_USE)) {
         Player p = event.getPlayer(); 
         World f = event.getFrom();
         
-        List<LivingEntity> pets = getPetsOf(p.getUniqueId(), f); // Retrieve pets once
-        int totalPets = pets.size(); // Get the total number of pets
-
-	    msg(p,MSG+"&2"+totalPets+" pets&6 jumped in the portal with you!");
+        List<LivingEntity> pets = getPetsOf(p.getUniqueId(), f);
+        Map<String, Integer> petCounts = new HashMap<>();
+        List<String> uniquePetNames = new ArrayList<>();
 
         for (LivingEntity pet : pets) {
             if (!pet.isDead() && !pet.isLeashed() && !sitting(pet)) {
                 tpPet(pet, p);
+                String name = pet.getName();
+
+                // Check if name is generic (Wolf, Cat, etc.)
+                if (isGenericPetName(name)) {
+                    petCounts.put(name, petCounts.getOrDefault(name, 0) + 1);
+                } else {
+                    uniquePetNames.add(name);
+                }
             }
+        }
+
+        if (!petCounts.isEmpty() || !uniquePetNames.isEmpty()) {
+            String formattedNames = formatPetNames(uniquePetNames, petCounts);
+            msg(p, MSG + "&2" + formattedNames + "&6 jumped in the portal with you!");
         }
     }
 }
+
+/**
+ * Checks if the pet name is a generic species name that should be counted instead of listed individually.
+ */
+private boolean isGenericPetName(String name) {
+    return name.equalsIgnoreCase("Wolf") || name.equalsIgnoreCase("Cat");
+}
+
+/**
+ * Formats a list of unique pet names and counted generic pet names into a readable string.
+ * Example outputs:
+ * - "Charlie jumped in the portal with you!"
+ * - "Charlie and Max jumped in the portal with you!"
+ * - "Charlie, Max, and Bella jumped in the portal with you!"
+ * - "3 Wolves and Bella jumped in the portal with you!"
+ * - "2 Cats, 3 Wolves, and Max jumped in the portal with you!"
+ */
+private String formatPetNames(List<String> uniqueNames, Map<String, Integer> countedNames) {
+    List<String> formattedNames = new ArrayList<>();
+
+    // Add counted names with proper pluralization
+    for (Map.Entry<String, Integer> entry : countedNames.entrySet()) {
+        formattedNames.add(entry.getValue() + " " + pluralize(entry.getKey(), entry.getValue()));
+    }
+
+    // Add unique pet names
+    formattedNames.addAll(uniqueNames);
+
+    // Format into readable string
+    if (formattedNames.size() == 1) {
+        return formattedNames.get(0);
+    } else if (formattedNames.size() == 2) {
+        return formattedNames.get(0) + " and " + formattedNames.get(1);
+    } else {
+        return String.join(", ", formattedNames.subList(0, formattedNames.size() - 1)) + ", and " + formattedNames.get(formattedNames.size() - 1);
+    }
+}
+
+/**
+ * Returns the plural form of a pet name (e.g., "Wolf" → "Wolves", "Cat" → "Cats").
+ */
+private String pluralize(String name, int count) {
+    if (name.equalsIgnoreCase("Wolf")) {
+        return count == 1 ? "Wolf" : "Wolves";
+    }
+    return count == 1 ? name : name + "s";
+}
+
 
 void tpPet(LivingEntity pet, Player p) {
 	// Only teleport if pet is a dog (Wolf) or a Cat
