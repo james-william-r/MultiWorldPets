@@ -37,39 +37,6 @@ public void onEnable() {
 @Override
 public void onDisable() { HandlerList.unregisterAll(); }
 
-@Override
-public boolean onCommand(@NotNull CommandSender s, Command c, @NotNull String f, String[] a) {
-	if(c.getName().equals("mwp")) {
-		if(a.length>1 || (!(s instanceof Player) && a.length!=1)) {
-			msg(s,"&cUsage: /mwp [player]"); return true;
-		}
-		OfflinePlayer p=a.length>0?Bukkit.getOfflinePlayerIfCached(a[0]):(Player)s;
-		if(p==null) msg(s,"&cNo such player!"); else {
-			UUID u=p.getUniqueId(); msg(s,"Pets of &e"+p.getName()+"&r:");
-			for(World w: Bukkit.getWorlds()) for(LivingEntity pet: getPetsOf(u,w)) {
-				Location l=pet.getLocation();
-				int h=(int)Math.round(pet.getHealth()),
-					mh=(int)Math.round(pet.getMaxHealth());
-				msg(s,"&a"+pet.getName()+" &rin &d"+w.getName()
-					+" &rat &b"+locStr(l)+" &r(&e"+h+"&r/&e"+mh+"&c♥&r)");
-			}
-		}
-		return true;
-	} else if(c.getName().equals("tppet")) {
-		if(!(s instanceof Player)) msg(s,"&cCannot use tppet from the console.");
-		else if(a.length!=1) msg(s,"&cUsage: /tppet <name>");
-		else {
-			String n=a[0]; UUID u=((Player)s).getUniqueId();
-			for(World w: Bukkit.getWorlds()) for(LivingEntity pet: getPetsOf(u,w)) {
-				if(n.equalsIgnoreCase(pet.getName())) { tpPet(pet, ((Player)s)); return true; }
-			}
-			msg(s,"&cPet not found.");
-		}
-		return true;
-	}
-	return false;
-}
-
 //------------------- Plugin Event Handlers -------------------
 
 @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -81,21 +48,19 @@ public void onPlayerChangedWorld(PlayerChangedWorldEvent event) { if(event.getPl
 
 void tpPet(LivingEntity pet, Player p) {
 	// Only teleport if pet is a dog (Wolf) or a Cat
-	if (!isDogOrCat(pet)) {
-		if (DBG) msg(null,MSG+"&cSkipped teleporting "+pet.getName()+" as it's not a dog or cat");
-		return;
-	}
-	
+	if (isDogOrCat(pet)) {
+		
 	String w=pet.getWorld().getName(), nw=p.getWorld().getName(),
 	n=pet.getName(); Location nl=randomLoc(pet, p.getLocation());
 	if(nl != null) { //Teleport
 		killOthers(pet); pet.teleport(nl); sitting(pet,false);
-		msg(p,MSG+"&bTeleported &a"+n+"&b!");
-		msg(null,MSG+"&bTeleported "+p.getName()
-			+"'s &bpet &a"+n+" &bfrom &d"+w+" &bto &d"+nw);
+		// msg(p,MSG+"&bTeleported &a"+n+"&b!");
+		// msg(null,MSG+"&bTeleported "+p.getName()
+		// 	+"'s &bpet &a"+n+" &bfrom &d"+w+" &bto &d"+nw);
 	} else { //Unsafe
 		String e=MSG+"&cFailed to Teleport &a"+n+" &cfrom &d"+w+" &cto &d"+nw+"&c!";
 		msg(p,e); msg(null,e);
+	}
 	}
 }
 
