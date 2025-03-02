@@ -21,7 +21,7 @@ import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
 public class Main extends JavaPlugin implements Listener {
-static final String MSG="&f[PreciousCargo] &6", PERM_USE="multiworldpets.use";
+static final String MSG="&6", PERM_USE="multiworldpets.use";
 static int RADIUS, MAX_LOC_TRIES; static ArrayList<Material> UNSAFE;
 static boolean DBG;
 
@@ -40,11 +40,23 @@ public void onDisable() { HandlerList.unregisterAll(); }
 //------------------- Plugin Event Handlers -------------------
 
 @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-public void onPlayerChangedWorld(PlayerChangedWorldEvent event) { if(event.getPlayer().hasPermission(PERM_USE)) {
-	Player p=event.getPlayer(); World f=event.getFrom();
-	for(LivingEntity pet: getPetsOf(p.getUniqueId(),f))
-		if(!pet.isDead() && !pet.isLeashed() && !sitting(pet)) tpPet(pet,p);
-}}
+public void onPlayerChangedWorld(PlayerChangedWorldEvent event) { 
+    if (event.getPlayer().hasPermission(PERM_USE)) {
+        Player p = event.getPlayer(); 
+        World f = event.getFrom();
+        
+        List<LivingEntity> pets = getPetsOf(p.getUniqueId(), f); // Retrieve pets once
+        int totalPets = pets.size(); // Get the total number of pets
+
+	    msg(p,MSG+"&2"+totalPets+" pets&6 jumped in the portal with you!");
+
+        for (LivingEntity pet : pets) {
+            if (!pet.isDead() && !pet.isLeashed() && !sitting(pet)) {
+                tpPet(pet, p);
+            }
+        }
+    }
+}
 
 void tpPet(LivingEntity pet, Player p) {
 	// Only teleport if pet is a dog (Wolf) or a Cat
@@ -54,7 +66,7 @@ void tpPet(LivingEntity pet, Player p) {
 		if(nl != null) {
 			//Teleport
 			killOthers(pet); pet.teleport(nl); sitting(pet,false);
-			msg(p,MSG+"&2"+n+"&6 joined you from "+w+"!");
+			msg(p,MSG+"&2"+n+"&6 jumped in the portal with you!");
 			msg(null,MSG+"&bTeleported "+p.getName()
 				+"'s &bpet &a"+n+" &bfrom &d"+w+" &bto &d"+nw);
 		} else { //Unsafe
