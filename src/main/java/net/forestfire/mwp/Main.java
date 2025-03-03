@@ -46,7 +46,13 @@ public class Main extends JavaPlugin implements Listener {
         List<LivingEntity> pets = getPetsOf(p.getUniqueId(), fromWorld);
         Map<String, Integer> petCounts = new HashMap<>();
         List<String> uniquePetNames = new ArrayList<>();
-        
+
+
+        // Early return if previous world and new world don't have matching gamemode
+        if (fromWorld.getGameMode() != p.getWorld().getGameMode()) {
+            return;
+        }
+            
         for (LivingEntity pet : pets) {
             if (!pet.isDead() && !pet.isLeashed() && !sitting(pet) && tpPet(pet, p)) {
                 String name = pet.getName();
