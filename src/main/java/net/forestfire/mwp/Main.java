@@ -21,7 +21,7 @@ import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
 public class Main extends JavaPlugin implements Listener {
-static final String MSG="&6", PERM_USE="multiworldpets.use";
+static final String MSG="&6";
 static int RADIUS, MAX_LOC_TRIES; static ArrayList<Material> UNSAFE;
 static boolean DBG;
 
@@ -41,7 +41,6 @@ public void onDisable() { HandlerList.unregisterAll(); }
 
 @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 public void onPlayerChangedWorld(PlayerChangedWorldEvent event) { 
-    if (event.getPlayer().hasPermission(PERM_USE)) {
         Player p = event.getPlayer(); 
         World f = event.getFrom();
         
@@ -67,7 +66,6 @@ public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
             String formattedNames = formatPetNames(uniquePetNames, petCounts);
             msg(p, MSG + "&2" + formattedNames + "&6 jumped in the portal with you!");
         }
-    }
 }
 
 /**
