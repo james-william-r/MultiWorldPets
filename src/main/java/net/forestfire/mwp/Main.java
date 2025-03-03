@@ -57,9 +57,13 @@ public class Main extends JavaPlugin implements Listener {
         MVWorld toMVWorld = worldManager.getMVWorld(p.getWorld().getName());
         
         // Early return if previous world and new world don't have matching gamemode
-        if (fromMVWorld != null && toMVWorld != null && 
-            !fromMVWorld.getGameMode().equals(toMVWorld.getGameMode())) {
-            return;
+        if (fromMVWorld != null && toMVWorld != null) {
+            GameMode fromGameMode = GameMode.valueOf(fromMVWorld.getGameMode().toUpperCase());
+            GameMode toGameMode = GameMode.valueOf(toMVWorld.getGameMode().toUpperCase());
+        
+            if (fromGameMode != toGameMode) {
+                return;
+            }
         }
             
         for (LivingEntity pet : pets) {
