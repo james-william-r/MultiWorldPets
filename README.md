@@ -1,13 +1,9 @@
+**[Heads Up!] This is adapted to be a permissionless version of MultiWorldPets, for automatically teleporting wolfs and cats when you move between worlds.**
+
 # MultiWorldPets
 ### Never leave your good bois behind again.
 
 MWP is a simple, lightweight plugin that allows you to keep track of your pets and take them with you to other worlds (works with [Multiverse](https://modrinth.com/plugin/multiverse-core) and other multi-world systems.) All Tamable entities are compatible.
-
-**NEW:** `/mwp` now shows your pet's health, so you can check up on them without the guesswork!
-
-### Commands
-- `/mwp [player]` List all your pets, or pets of another player.
-- `/tppet <name>` Teleport your pet nearby.
 
 ### Config Settings
 - `debug` Enable debug info. *(Default: false)*
