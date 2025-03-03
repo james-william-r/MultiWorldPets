@@ -19,6 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MVWorldManager;
+import com.onarandombox.MultiverseCore.api.MVWorld;
+
 public class Main extends JavaPlugin implements Listener {
     static final String MSG = "&6";
     static int RADIUS, MAX_LOC_TRIES;
@@ -46,10 +50,15 @@ public class Main extends JavaPlugin implements Listener {
         List<LivingEntity> pets = getPetsOf(p.getUniqueId(), fromWorld);
         Map<String, Integer> petCounts = new HashMap<>();
         List<String> uniquePetNames = new ArrayList<>();
-
-
+        
+        // Use MultiVerse-Core API to check gamemode instead of direct comparison
+        MVWorldManager worldManager = MultiverseCore.getPlugin().getMVWorldManager();
+        MVWorld fromMVWorld = worldManager.getMVWorld(fromWorld.getName());
+        MVWorld toMVWorld = worldManager.getMVWorld(p.getWorld().getName());
+        
         // Early return if previous world and new world don't have matching gamemode
-        if (fromWorld.getGameMode() != p.getWorld().getGameMode()) {
+        if (fromMVWorld != null && toMVWorld != null && 
+            !fromMVWorld.getGameMode().equals(toMVWorld.getGameMode())) {
             return;
         }
             
@@ -63,7 +72,6 @@ public class Main extends JavaPlugin implements Listener {
                 }
             }
         }
-
         if (!petCounts.isEmpty() || !uniquePetNames.isEmpty()) {
             msg(p, MSG + "&2" + formatPetNames(uniquePetNames, petCounts) + "&6 jumped in the portal with you!");
         }
